@@ -1,0 +1,9 @@
+-cp .
+--times
+-dce full
+-main Bot
+
+-lib hscript
+
+-neko bot.n
+
