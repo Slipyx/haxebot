@@ -1,3 +1,8 @@
+//
+// Bot command for parsing and interpreting Haxe expressions
+// Uses hscript library
+//
+
 package;
 
 // Custom interp class with ungraceful kill
@@ -53,7 +58,7 @@ class Hs {
 		if ( outstr == null && trcstr == "" ) outstr = "-- No Output --";
 		if ( trcstr != "" ) outstr = ((outstr == null) ? trcstr : (outstr + " :: " + trcstr));
 
-		Bot.send( "PRIVMSG " + src + " :" + outstr );
+		Bot.send( "PRIVMSG " + src + " :> " + outstr );
 	}
 }
 

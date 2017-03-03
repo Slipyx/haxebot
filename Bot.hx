@@ -69,7 +69,15 @@ class Bot {
 	}
 
 	public static function send( str: String ) {
+		// truncate over 510
+		if ( str.length > 510 ) str = str.substr( 0, 510 );
+
+		// strip newline chars
+		str = str.split( "\r" ).join( " " );
+		str = str.split( "\n" ).join( " " );
+
 		Sys.println( ">> " + str );
+
 		sock.output.writeString( str + "\r\n" );
 		sock.output.flush();
 	}
