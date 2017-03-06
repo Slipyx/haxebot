@@ -7,6 +7,7 @@ typedef BotConfig = {
 	var user: String;
 	var realName: String;
 
+	var owner: String;
 	var server: String;
 	var channels: Array<String>;
 }
@@ -23,8 +24,8 @@ class Bot {
 	static function main() {
 		// default config
 		cfg = {
-			nick: "haxebot", user: "hxbot", realName: "Me Mow",
-			server: "irc.zandronum.com", channels: ["#ganymede"]
+			nick: "haxebot", user: "hxbot", realName: "Me Mow", owner: "slipyx",
+			server: "chat.freenode.net", channels: ["#ganymede"]
 		};
 
 		if ( sys.FileSystem.exists( "./cfg.json" ) )
@@ -97,13 +98,29 @@ class Bot {
 				send( "PRIVMSG " + c + " :meow" );
 			}
 		else if ( words[1] == "PRIVMSG" ) {
+			// channel or pm user
 			var src = words[2];
-			var nick = words[0];
+
+			// nick!user@host.name
+			var nick = words[0].substr( 1, words[0].indexOf( "!" ) - 1 );
+
+			// first word of message interpreted as a command, rest as parameters
 			var cix = msg.indexOf( " " );
 			var cmd = msg.substr( 0, cix );
 			msg = msg.substr( cix + 1 );
 			Sys.println( "<" + nick + "> " + cmd + ", " + msg );
-			if ( cmd == ";hs" ) {
+
+			// commands
+
+			// preliminary join/part support
+			// TODO: update cfg.channels dynamically as well
+			if ( nick == cfg.owner && cmd == ";join" ) {
+				send( "JOIN " + msg );
+			} else if ( nick == cfg.owner && cmd == ";part" ) {
+				send( "PART " + msg );
+
+			// hscript intrepreter
+			} else if ( cmd == ";hs" ) {
 				MainLoop.addThread( function() {
 					Hs.execHS( msg, src );
 				} );

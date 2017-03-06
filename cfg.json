@@ -1,9 +1,10 @@
 {
 	"nick": "haxebot",
-	"user": "hsb",
+	"user": "hxbot",
 	"realName": "Me Mow",
+	"owner": "slipyx",
 
-	"server": "irc.zandronum.com",
+	"server": "chat.freenode.net",
 	"channels": ["#ganymede"]
 }
 
