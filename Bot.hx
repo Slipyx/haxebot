@@ -90,9 +90,10 @@ class Bot {
 		msg = msg.substr( ix + 1 );
 		if ( words[1] == "004" || words[1] == "005" ) return; // ugly
 
-		if ( words[0] == "PING" )
+		if ( words[0] == "PING" ) {
+			Sys.print( 'PING [' + Date.now() + '] ' );
 			send( "PONG :" + msg );
-		else if ( words[1] == "001" )
+		} else if ( words[1] == "001" )
 			for ( c in cfg.channels ) {
 				send( "JOIN " + c );
 				send( "PRIVMSG " + c + " :meow" );

@@ -33,12 +33,16 @@ class Hs {
 		hsInterp.variables.set( "Map", Map );
 		hsInterp.variables.set( "List", List );
 		hsInterp.variables.set( "EReg", EReg );
+		hsInterp.variables.set( "Type", Type );
+		hsInterp.variables.set( "Dynamic", Dynamic );
+		hsInterp.variables.set( "Class", Class );
 		hsInterp.variables.set( "time", haxe.Timer.stamp );
 		hsInterp.variables.set( "trace", function( v: Dynamic ) { trcstr += Std.string( v ); } );
 		hsInterp.variables.set( "print", hsInterp.variables.get( "trace" ) );
 
 		// parse
 		var hsParser = new hscript.Parser();
+		hsParser.allowTypes = true;
 
 		var running = true, killed = false;
 
