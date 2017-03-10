@@ -5,6 +5,9 @@
 	"owner": "slipyx",
 
 	"server": "chat.freenode.net",
+	"port": 6697,
+	"serverPass": "",
+
 	"channels": ["#ganymede"]
 }
 

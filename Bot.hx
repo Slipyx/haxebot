@@ -9,6 +9,8 @@ typedef BotConfig = {
 
 	var owner: String;
 	var server: String;
+	var port: Int;
+	var serverPass: String;
 	var channels: Array<String>;
 }
 
@@ -25,7 +27,7 @@ class Bot {
 		// default config
 		cfg = {
 			nick: "haxebot", user: "hxbot", realName: "Me Mow", owner: "slipyx",
-			server: "chat.freenode.net", channels: ["#ganymede"]
+			server: "chat.freenode.net", port: 6697, serverPass: "", channels: ["#ganymede"]
 		};
 
 		if ( sys.FileSystem.exists( "./cfg.json" ) )
@@ -34,13 +36,12 @@ class Bot {
 		sock = new sys.ssl.Socket();
 
 		sock.verifyCert = false;
-		sock.connect( new sys.net.Host( cfg.server ), 6697 );
+		sock.connect( new sys.net.Host( cfg.server ), cfg.port );
 		sock.setBlocking( false );
 
+		if ( cfg.serverPass != "" ) send( "PASS " + cfg.serverPass );
 		send( "NICK " + cfg.nick );
 		send( "USER " + cfg.user + " 0 * :" + cfg.realName );
-
-		haxe.Timer.delay( meowFunc, 60 * 1000 );
 
 		// Add function for reading socket to MainLoop
 		mLoopEvt = MainLoop.add( function() {
@@ -51,8 +52,10 @@ class Bot {
 				for ( s in r.read )
 					// loop will break when readLine throws EOF
 					while ( true )
-						try { handleMsg( s.input.readLine() ); }
-						catch ( e: Dynamic ) { break; }
+						try {
+							var msg = s.input.readLine();
+							handleMsg( msg );
+						} catch ( e: Dynamic ) { break; }
 
 			// dont loop faster than 10 times per second
 			mLoopEvt.delay( 0.1 );
@@ -63,7 +66,6 @@ class Bot {
 		//sock.close();
 	}
 
-	static var meowTimer: haxe.Timer;
 	static function meowFunc() {
 		for ( c in cfg.channels )
 			send( "PRIVMSG " + c + " :meeow" );
@@ -88,17 +90,17 @@ class Bot {
 		var ix = msg.indexOf( ":", 1 );
 		var words = msg.substr( 0, ix ).split( " " );
 		msg = msg.substr( ix + 1 );
-		if ( words[1] == "004" || words[1] == "005" ) return; // ugly
 
 		if ( words[0] == "PING" ) {
 			Sys.print( 'PING [' + Date.now() + '] ' );
 			send( "PONG :" + msg );
-		} else if ( words[1] == "001" )
+		} else if ( words[1] == "001" ) {
+			Sys.println( "CONNECTED!" );
 			for ( c in cfg.channels ) {
 				send( "JOIN " + c );
-				send( "PRIVMSG " + c + " :meow" );
+				//send( "PRIVMSG " + c + " :meow" );
 			}
-		else if ( words[1] == "PRIVMSG" ) {
+		} else if ( words[1] == "PRIVMSG" ) {
 			// channel or pm user
 			var src = words[2];
 
@@ -109,7 +111,7 @@ class Bot {
 			var cix = msg.indexOf( " " );
 			var cmd = msg.substr( 0, cix );
 			msg = msg.substr( cix + 1 );
-			Sys.println( "<" + nick + "> " + cmd + ", " + msg );
+			Sys.println( "(" + src + ") <" + nick + "> " + cmd + " " + msg );
 
 			// commands
 
@@ -126,8 +128,8 @@ class Bot {
 					Hs.execHS( msg, src );
 				} );
 			}
-		} else
-			Sys.println( words + " | " + msg );
+		} /*else
+			Sys.println( words );*/
 	}
 }
 
