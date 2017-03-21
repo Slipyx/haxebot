@@ -109,8 +109,14 @@ class Bot {
 
 			// first word of message interpreted as a command, rest as parameters
 			var cix = msg.indexOf( " " );
-			var cmd = msg.substr( 0, cix );
-			msg = msg.substr( cix + 1 );
+			var cmd = '';
+
+			if ( cix < 0 ) cmd = msg;
+			else {
+				cmd = msg.substr( 0, cix );
+				msg = msg.substr( cix + 1 );
+			}
+
 			Sys.println( "(" + src + ") <" + nick + "> " + cmd + " " + msg );
 
 			// commands
@@ -126,6 +132,12 @@ class Bot {
 			} else if ( cmd == ";hs" ) {
 				MainLoop.addThread( function() {
 					Hs.execHS( msg, src );
+				} );
+
+			// robot finds kitten
+			} else if ( cmd == ";rfk" || cmd == ";findkitten" ) {
+				MainLoop.addThread( function() {
+					Rfk.find( src, nick );
 				} );
 			}
 		} /*else
